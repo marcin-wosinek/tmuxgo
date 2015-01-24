@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# read the script location
+SCRIPT=$(readlink -f $0)
+DIR=`dirname $SCRIPT`
+JQ=$DIR/lib/jq
+PWD=`pwd`
+
+if [ $# -eq 0 ]; then
+  echo "No arguments supplied, please add session description in json"
+  exit 1
+fi
+
+JSON=$1
+
+function startSession {
+  prefix="$1"
+
+  name=`$JQ -r "$prefix.name // \"session\"" $JSON`
+  location=`$JQ -r "$prefix.location // \"$PWD\"" $JSON`
+
+  tmux new-session -d -s $name -c $location
+
+  # TODO deal with errors
+  echo $name
+}
+
+function addWindow {
+  prefix="$1"
+
+  echo 'create windows'
+}
+
+function attachSession {
+  tmux attach -t $1
+}
+
+session=`startSession ''`
+addWindows '' $session
+attachSession $session
