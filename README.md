@@ -1,3 +1,7 @@
+# NOTE
+
+This code is Work in Progress, and until 0.1.0 release can be consider unusable.
+
 # tmuxgo
 Simple scritp to start predefined tmux nested session
 
@@ -34,7 +38,7 @@ object in *open* array defines widows.
 }
 ```
 
-# Flat tmux session
+# Nested tmux session
 
 ```json
 {
@@ -59,4 +63,10 @@ To start the session:
 
 ```bash
 $ tmuxgo session.json
+```
+
+## Renaming session
+
+```bash
+$ tmuxgo session.json otherName
 ```
