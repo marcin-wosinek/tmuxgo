@@ -8,6 +8,9 @@ Simple scritp to start predefined tmux nested session
 # Installation
 Clone the repository link to tmuxgo from a folder you have in the path variable.
 
+## Dependency
+tmuxgo use [jq](http://stedolan.github.io/jq/) for parsing json files.
+
 # Session description
 
 Describe your session in json format. Main object defines the session, each

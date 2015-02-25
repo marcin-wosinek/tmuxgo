@@ -1,0 +1,20 @@
+{
+  "name": "project",
+  "location": "~/workspace/angular.js/",
+  "open": [
+    {
+      "name": "git"
+    },
+    {
+      "name": "vim",
+      "open": "vim"
+    },
+    {
+      "name": "grunt",
+      "open": "grunt serve"
+    },
+    {
+      "name": "zsh"
+    }
+  ]
+}
