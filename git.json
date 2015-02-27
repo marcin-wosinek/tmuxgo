@@ -1,6 +1,6 @@
 {
   "name": "project",
-  "location": "~/workspace/angular.js/",
+  "location": ".",
   "open": [
     {
       "name": "git"

@@ -12,29 +12,54 @@ if [ $# -eq 0 ]; then
 fi
 
 JSON=$1
+NAME=$2
 
 function startSession {
-  prefix="$1"
+  local prefix="$1"
+  local nameArg="$2"
 
-  name=`$JQ -r "$prefix.name // \"session\"" $JSON`
-  location=`$JQ -r "$prefix.location // \"$PWD\"" $JSON`
+  local name=`$JQ -r "$prefix.name // \"session\"" $JSON`
+  local location=`$JQ -r "$prefix.location // \"$PWD\"" $JSON`
 
-  tmux new-session -d -s $name -c $location
+  name=${nameArg:-$name}
+
+  # Location if ~ is part of the path
+  tmux new-session -d -c ${location} -s $name
 
   # TODO deal with errors
   echo $name
 }
 
-function addWindow {
-  prefix="$1"
+function addWindows {
+  local prefix="$1"
+  local session="$2"
 
-  echo 'create windows'
+  local length=`$JQ "$prefix.open | length - 1" $JSON`
+  echo "I need to create $length windows"
+
+  local i=0
+  while [ $i -lt $length ]
+  do
+    i=$[$i+1]
+    addWindow "$prefix.open[$i]" $session $i
+  done
+}
+
+function addWindow {
+  local prefix="$1"
+  local session="$2"
+  local session="$3"
+
+  local name=`$JQ "$prefix.name" $JSON`
+  local open=`$JQ "${prefix}.open" $JSON`
+
+  tmux new-window -t "$session" -k -n $name
 }
 
 function attachSession {
   tmux attach -t $1
 }
 
-session=`startSession ''`
+session=`startSession '' $NAME`
 addWindows '' $session
 attachSession $session
