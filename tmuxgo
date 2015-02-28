@@ -21,10 +21,12 @@ function startSession {
   local name=`$JQ -r "$prefix.name // \"session\"" $JSON`
   local location=`$JQ -r "$prefix.location // \"$PWD\"" $JSON`
 
+  local windowName=`$JQ -r "$prefix.open[0].name" $JSON`
+
   name=${nameArg:-$name}
 
   # Location if ~ is part of the path
-  tmux new-session -d -c ${location} -s $name
+  tmux new-session -d -c $location -n $windowName -s $name
 
   # TODO deal with errors
   echo $name
