@@ -33,8 +33,10 @@ function startSession {
     return 1;
   fi
 
-  # Location if ~ is part of the path
+  # TODO expand ~ to home path
   tmux new-session -d -c $location -n $windowName -s $name
+  tmux send-keys -t $session:0 "unset TMUX" C-m
+  tmux send-keys -t $session:0 "clear" C-m
 
   # TODO deal with errors
   echo $name
@@ -58,16 +60,17 @@ function addWindows {
 function addWindow {
   local prefix="$1"
   local session="$2"
-  local session="$3"
+  local windowNo="$3"
 
   local name=`$JQ "$prefix.name" $JSON`
   local open=`$JQ "${prefix}.open" $JSON`
 
   tmux new-window -t "$session" -k -n $name
+  tmux send-keys -t $session:$windowNo "unset TMUX" C-m;
+  tmux send-keys -t $session:$windowNo "clear" C-m;
 }
 
 function attachSession {
-  unset TMUX;
   tmux attach -t $1
 }
 
