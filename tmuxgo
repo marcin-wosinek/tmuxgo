@@ -62,8 +62,8 @@ function addWindow {
   local session="$2"
   local windowNo="$3"
 
-  local name=`$JQ "$prefix.name" $JSON`
-  local open=`$JQ "${prefix}.open" $JSON`
+  local name=`$JQ -r "$prefix.name" $JSON`
+  local open=`$JQ -r "$prefix.open" $JSON`
 
   tmux new-window -t "$session" -k -n $name
   tmux send-keys -t $session:$windowNo "unset TMUX" C-m;
