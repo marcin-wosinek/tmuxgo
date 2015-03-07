@@ -60,6 +60,7 @@ function startSession {
   # TODO expand ~ to home path
   tmux_ new-session -d -c $location -n $windowName -s $name
   tmux_ send-keys -t $session:0 "unset TMUX" C-m
+  tmux_ send-keys -t $session:0 "cd $location" C-m
   tmux_ send-keys -t $session:0 "clear" C-m
 
   # TODO deal with errors
