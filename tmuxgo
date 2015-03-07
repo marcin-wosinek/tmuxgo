@@ -98,6 +98,8 @@ function attachSession {
   tmux_ attach -t $1
 }
 
+unset TMUX
+
 session=`startSession '' $NAME` || {
   echo 'Failed to init root session, exiting'
   exit
