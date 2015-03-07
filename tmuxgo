@@ -5,11 +5,35 @@ SCRIPT=$(readlink -f $0)
 DIR=`dirname $SCRIPT`
 JQ=$DIR/lib/jq
 PWD=`pwd`
+dryRun=false
 
 if [ $# -eq 0 ]; then
   echo "No arguments supplied, please add session description in json"
   exit 1
 fi
+
+function tmux_ {
+  if $dryRun; then
+    >&2 echo tmux $@
+  else
+    tmux $@
+  fi
+}
+
+function show_help {
+  echo "Script to open automaticaly bunch of tmux windows. Add -n parameter to show all tmux calls that will be executed"
+}
+
+while getopts "h?n:" opt; do
+  case "$opt" in
+    h|\?)
+      show_help
+      exit 0
+      ;;
+    n) dryRun=true;
+      ;;
+  esac
+done
 
 JSON=$1
 NAME=$2
@@ -26,7 +50,7 @@ function startSession {
   name=${nameArg:-$name}
 
   # ensure session name is unic
-  sessions=`tmux ls -F '#{session_name}'`
+  sessions=`tmux_ ls -F '#{session_name}'`
   if [[ $sessions == *"$name"* ]]
   then
     >&2 echo "the session name $name is already used!"
@@ -34,9 +58,9 @@ function startSession {
   fi
 
   # TODO expand ~ to home path
-  tmux new-session -d -c $location -n $windowName -s $name
-  tmux send-keys -t $session:0 "unset TMUX" C-m
-  tmux send-keys -t $session:0 "clear" C-m
+  tmux_ new-session -d -c $location -n $windowName -s $name
+  tmux_ send-keys -t $session:0 "unset TMUX" C-m
+  tmux_ send-keys -t $session:0 "clear" C-m
 
   # TODO deal with errors
   echo $name
@@ -65,13 +89,13 @@ function addWindow {
   local name=`$JQ -r "$prefix.name" $JSON`
   local open=`$JQ -r "$prefix.open" $JSON`
 
-  tmux new-window -t "$session" -k -n $name
-  tmux send-keys -t $session:$windowNo "unset TMUX" C-m;
-  tmux send-keys -t $session:$windowNo "clear" C-m;
+  tmux_ new-window -t "$session" -k -n $name
+  tmux_ send-keys -t $session:$windowNo "unset TMUX" C-m;
+  tmux_ send-keys -t $session:$windowNo "clear" C-m;
 }
 
 function attachSession {
-  tmux attach -t $1
+  tmux_ attach -t $1
 }
 
 session=`startSession '' $NAME` || {
