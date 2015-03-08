@@ -16,7 +16,7 @@ function tmux_ {
   if $dryRun; then
     >&2 echo tmux $@
   else
-    tmux $@
+    tmux "$@"
   fi
 }
 
@@ -46,6 +46,7 @@ function startSession {
   local location=`$JQ -r "$prefix.location // \"$PWD\"" $JSON`
 
   local windowName=`$JQ -r "$prefix.open[0].name" $JSON`
+  local windowOpen=`$JQ -r "$prefix.open[0].open // \"\"" $JSON`
 
   name=${nameArg:-$name}
 
@@ -62,6 +63,8 @@ function startSession {
   tmux_ send-keys -t $session:0 "unset TMUX" C-m
   tmux_ send-keys -t $session:0 "cd $location" C-m
   tmux_ send-keys -t $session:0 "clear" C-m
+  tmux_ send-keys -lt $session:0 "$windowOpen";
+  tmux_ send-keys -t $session:0 C-m
 
   # TODO deal with errors
   echo $name
@@ -88,11 +91,14 @@ function addWindow {
   local windowNo="$3"
 
   local name=`$JQ -r "$prefix.name" $JSON`
-  local open=`$JQ -r "$prefix.open" $JSON`
+  local open=`$JQ -r "$prefix.open // \"\"" $JSON`
 
   tmux_ new-window -t "$session" -k -n $name
   tmux_ send-keys -t $session:$windowNo "unset TMUX" C-m;
   tmux_ send-keys -t $session:$windowNo "clear" C-m;
+
+  tmux_ send-keys -lt $session:$windowNo "$open";
+  tmux_ send-keys -t $session:$windowNo C-m;
 }
 
 function attachSession {
